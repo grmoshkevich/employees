@@ -5,20 +5,29 @@ export const employeesSlice = createSlice({
   name: 'employees',
   initialState: employees,
   reducers: {
-    add: (state) => {
-      state.employees.push({
-        "id": 321,
-        "name": "Гриша",
-        "isArchive": false,
-        "role": "driver",
-        "phone": "+7 (883) 508-3269",
-        "birthday": "12.02.1994"
-      },)
+    add: (state, action) => {
+      const lastId = state.at(-1)?.id ?? 0
+      state.push({
+        id: lastId + 1,
+        ...action.payload
+      })
     },
+    edit: (state, action) => {
+      const { id, name, isArchive, role, phone, birthday } = action.payload;
+      const existingEmployee = state.find((employee) => employee.id === id);
+
+      if (existingEmployee) {
+        existingEmployee.name = name;
+        existingEmployee.isArchive = isArchive;
+        existingEmployee.role = role;
+        existingEmployee.phone = phone;
+        existingEmployee.birthday = birthday;
+      }
+    }
   },
 })
 
-export const { add } = employeesSlice.actions
+export const { add, edit } = employeesSlice.actions
 
 export default employeesSlice.reducer
 
