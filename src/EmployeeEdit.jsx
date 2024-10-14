@@ -5,9 +5,10 @@ import InputMask from "@mona-health/react-input-mask";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { add, edit } from "./employeesSlice"; // Import the add action from employeesSlice
 import { useParams, useNavigate } from 'react-router-dom'; // For routing
-import './EmployeeEdit.css'
+import './EmployeeEdit.scss'
 
 const EmployeeEdit = () => {
+  console.log()
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -15,7 +16,6 @@ const EmployeeEdit = () => {
   const employee = useSelector((state) =>
     state.employees.find((employee) => employee.id === parseInt(id))
   );
-  console.log(id, employee)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -27,7 +27,6 @@ const EmployeeEdit = () => {
 
   useEffect(() => {
     if (employee) {
-      console.log('hi,', employee)
       setFormData(employee); // Pre-fill form if editing
     }
   }, [employee]);
@@ -87,75 +86,78 @@ const EmployeeEdit = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="controls">
-      {/* Name */}
-      <div>
-        <label htmlFor="name">Имя сотрудника:</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-        {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
-      </div>
-
-      {/* Phone with Mask */}
-      <div>
-        <label htmlFor="phone">Телефон:</label>
-        <InputMask
-          mask="+7 (999) 999-99-99"
-          value={formData.phone}
-          onChange={handleChange}
-        >
+    <div className="edit-container">
+      <h1>{employee ? 'Изменение данных сотрудника' : 'Добавление нового сотрудника'}</h1>
+      <form onSubmit={handleSubmit} className="form">
+        {/* Name */}
+        <div>
+          <label htmlFor="name">Имя сотрудника:</label>
           <input
             type="text"
-            id="phone"
-            name="phone"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
           />
-        </InputMask>
-        {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
-      </div>
+          {errors.name && <p className="error">{errors.name}</p>}
+        </div>
 
-      {/* Birthday with Mask */}
-      <div>
-        <label htmlFor="birthday">Дата рождения:</label>
-        <InputMask
-          mask="99.99.9999"
-          value={formData.birthday}
-          onChange={handleChange}
-        >
-          <input
-            type="text"
-            id="birthday"
-            name="birthday"
-            placeholder="DD.MM.YYYY"
-          />
-        </InputMask>
-        {errors.birthday && (
-          <p style={{ color: "red" }}>{errors.birthday}</p>
-        )}
-      </div>
+        {/* Phone with Mask */}
+        <div>
+          <label htmlFor="phone">Телефон:</label>
+          <InputMask
+            mask="+7 (999) 999-9999"
+            value={formData.phone}
+            onChange={handleChange}
+          >
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+            />
+          </InputMask>
+          {errors.phone && <p className="error">{errors.phone}</p>}
+        </div>
 
-      {/* Role Dropdown */}
-      <div>
-        <label htmlFor="role">Должность:</label>
-        <select
-          id="role"
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-        >
-          <option value="cook">Повар</option>
-          <option value="waiter">Официант</option>
-          <option value="driver">Водитель</option>
-        </select>
-      </div>
+        {/* Birthday with Mask */}
+        <div>
+          <label htmlFor="birthday">Дата рождения:</label>
+          <InputMask
+            mask="99.99.9999"
+            value={formData.birthday}
+            onChange={handleChange}
+          >
+            <input
+              type="text"
+              id="birthday"
+              name="birthday"
+              placeholder="DD.MM.YYYY"
+            />
+          </InputMask>
+          {errors.birthday && (
+            <p className="error">{errors.birthday}</p>
+          )}
+        </div>
 
-      {/* Status Checkbox */}
-      <div>
-        <label htmlFor="isArchive">
+        {/* Role Dropdown */}
+        <div>
+          <label htmlFor="role">Должность:</label>
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+          >
+            <option value="cook">Повар</option>
+            <option value="waiter">Официант</option>
+            <option value="driver">Водитель</option>
+          </select>
+        </div>
+
+        {/* Status Checkbox */}
+        <div>
+          <label htmlFor="isArchive">В архиве:
+          </label>
           <input
             type="checkbox"
             id="isArchive"
@@ -163,14 +165,14 @@ const EmployeeEdit = () => {
             checked={formData.isArchive}
             onChange={handleChange}
           />
-          В архиве
-        </label>
-      </div>
+        </div>
 
-      <button type="submit">{employee ? 'Сохранить данные сотрудника' : 'Добавить сотрудника'}</button>
-      <button type="button" onClick={handleCancel}>Отменить</button>
-
-    </form>
+        <div className="form-buttons">
+          <button type="submit">Сохранить данные сотрудника</button>
+          <button type="button" onClick={handleCancel}>Отменить</button>
+        </div>
+      </form>
+    </div>
   );
 };
 

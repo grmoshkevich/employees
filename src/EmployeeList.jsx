@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import './EmployeeList.css'
+import './EmployeeList.scss'
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the Data Grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the Data Grid
@@ -44,7 +44,7 @@ function EmployeeList() {
   const [status, setStatus] = useState(false);
 
   const employees = useSelector((state) => state.employees)
-  console.log('zxc', employees)
+  console.log('hey', employees)
   const [rowData, setRowData] = useState(employees);
   useEffect(() => {
     setRowData(employees)
@@ -88,6 +88,7 @@ function EmployeeList() {
   };
 
   const handleAddNew = () => {
+    console.log('hei')
     navigate('/employees/new');
   };
   const onGridReady = useCallback((params) => {
@@ -96,27 +97,22 @@ function EmployeeList() {
 
   const [domLayout, setDomLayout] = useState('normal'); // Высота таблицы
   useEffect(() => {
-    const rowHeight = 42;
     const displayedRowsCount = gridRef.current.api?.getDisplayedRowCount()
-    console.log('xxx', gridRef.current.api)
+    console.log('displayedRowsCount', displayedRowsCount)
     if (displayedRowsCount < 10) {
       setDomLayout("autoHeight");
     }
     else {
       setDomLayout("normal");
-      // document.getElementById('myGrid').style.height = "600px";
     }
-    // const numRows = rowData.length;
-    // console.log(rowData.length)
-    // const newTableHeight = Math.min(500, rowHeight * numRows + 100); 
-    // setTableHeight(newTableHeight);
   }, [doesExternalFilterPass]);
 
 
   return (
-    <div style={{ maxWidth: 800 }}>
-      <button onClick={handleAddNew}>Добавить нового сотрудника</button>
-      <div className="controls" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="list-container">
+      <h1>Сотрудники</h1>
+      <button onClick={handleAddNew}>Добавить сотрудника</button>
+      <div className="filter">
 
         <div>
           <label htmlFor="role">Должность:</label>
@@ -131,18 +127,26 @@ function EmployeeList() {
             <option value="cook">Повар</option>
           </select>
         </div>
-        <label>
-          В архиве
-          <input type="checkbox" checked={status} onChange={e => externalFilterChanged('status', e.target.checked)} />
-        </label>
+        <div>
+          <label htmlFor="isArchive">В архиве:
+          </label>
+          <input
+            type="checkbox"
+            id="isArchive"
+            name="isArchive"
+            checked={status}
+            onChange={e => externalFilterChanged('status', e.target.checked)}
+          />
+        </div>
       </div>
       <div
-        className="ag-theme-quartz" // applying the Data Grid theme
-        style={{ height: 500 }} // the Data Grid will fill the size of the parent container
+        className="ag-theme-quartz"
+        style={{ height: 500, maxWidth: 1000, margin: "0.5rem 0" }}
       >
 
         <AgGridReact
           ref={gridRef}
+          rowClass="grid-row"
           rowData={rowData}
           columnDefs={colDefs}
           isExternalFilterPresent={isExternalFilterPresent}

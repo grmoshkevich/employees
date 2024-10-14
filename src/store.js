@@ -1,8 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import employeesReducer from './employeesSlice'
 
-export default configureStore({
-  reducer: {
-    employees: employeesReducer,
-  },
+const rootReducer = combineReducers({
+  employees: employeesReducer
 })
+
+export function setupStore(preloadedState) {
+  return configureStore({
+    reducer: rootReducer,
+    preloadedState
+  })
+}
+
