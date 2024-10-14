@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 // Masked input libraries
 import InputMask from "@mona-health/react-input-mask";

@@ -1,11 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './EmployeeList.scss'
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the Data Grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the Data Grid
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { roleMap } from './utils';
 
@@ -31,23 +29,25 @@ const dateComparator = (date1, date2) => {
   return date1Number - date2Number;
 };
 
+
+function setSelectedRole(setSearchParams, selectedRole) {
+  setSearchParams(searchParamsLocal => {
+    searchParamsLocal.set('role', selectedRole)
+    return searchParamsLocal;
+  })
+}
+function setIsArchive(setSearchParams, isArchive) {
+  setSearchParams(searchParamsLocal => {
+    searchParamsLocal.set('isArchive', isArchive)
+    return searchParamsLocal
+  })
+}
+
 function EmployeeList() {
   const navigate = useNavigate();
   const gridRef = useRef();
   const [searchParams, setSearchParams] = useSearchParams();
   console.log('asdf', searchParams.toString())
-  function setSelectedRole(selectedRole) {
-    setSearchParams(searchParamsLocal => {
-      searchParamsLocal.set('role', selectedRole)
-      return searchParamsLocal;
-    })
-  }
-  function setIsArchive(isArchive) {
-    setSearchParams(searchParamsLocal => {
-      searchParamsLocal.set('isArchive', isArchive)
-      return searchParamsLocal
-  })
-  }
   const selectedRole = searchParams.get('role') ?? 'everyone';
   const isArchive = searchParams.get('isArchive') === 'true';
 
@@ -56,7 +56,7 @@ function EmployeeList() {
   useEffect(() => {
     setRowData(employees)
   }, [employees]);
-  const [colDefs, setColDefs] = useState([
+  const [colDefs] = useState([
     { field: "name", headerName: 'Имя', minWidth: 200 },
     { field: "role", sortable: false, headerName: 'Должность', valueGetter: p => roleMap[p.data.role], minWidth: 200 },
     { field: "phone", sortable: false, headerName: 'Телефон', minWidth: 200 },
@@ -66,14 +66,14 @@ function EmployeeList() {
   const externalFilterChanged = useCallback((filter, newValue) => {
     switch (filter) {
       case 'role':
-        setSelectedRole(newValue);
+        setSelectedRole(setSearchParams, newValue);
         break;
       case 'isArchive':
-        setIsArchive(newValue)
+        setIsArchive(setSearchParams, newValue)
         break;
     }
     gridRef.current.api.onFilterChanged();
-  }, []);
+  }, [setSearchParams]);
 
   const isExternalFilterPresent = useCallback(() => {
     return selectedRole !== "everyone" || isArchive;

@@ -1,5 +1,5 @@
-import React from 'react'
 import { render, screen, within } from '@testing-library/react'
+import { expect} from 'vitest'
 import { Provider } from 'react-redux'
 import { setupStore } from './store'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'

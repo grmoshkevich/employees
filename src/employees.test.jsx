@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import { renderWithProviders, checkEmployeeRow } from './test-utils'
-import { waitFor, waitForElementToBeRemoved, within, screen, fireEvent } from '@testing-library/react'
+import { waitFor, waitForElementToBeRemoved, screen, fireEvent } from '@testing-library/react'
 
 const archiveEmployee = {
   "id": 16,
