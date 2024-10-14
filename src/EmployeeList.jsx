@@ -7,6 +7,7 @@ import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the 
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the Data Grid
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
+import { roleMap } from './utils';
 
 const parseDate = (date) => {
   if (!date) return NaN; // Handle falsy inputs
@@ -29,13 +30,6 @@ const dateComparator = (date1, date2) => {
   }
   return date1Number - date2Number;
 };
-
-
-const roleMap = {
-  'driver': 'Водитель',
-  'waiter': 'Официант',
-  'cook': 'Повар'
-}
 
 function EmployeeList() {
   const navigate = useNavigate();

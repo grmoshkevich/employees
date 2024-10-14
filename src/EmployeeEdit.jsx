@@ -28,6 +28,7 @@ const EmployeeEdit = () => {
   useEffect(() => {
     if (employee) {
       setFormData(employee); // Pre-fill form if editing
+      console.log('employeeemployee', employee)
     }
   }, [employee]);
 
