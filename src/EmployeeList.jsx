@@ -47,7 +47,6 @@ function EmployeeList() {
   const navigate = useNavigate();
   const gridRef = useRef();
   const [searchParams, setSearchParams] = useSearchParams();
-  console.log('asdf', searchParams.toString())
   const selectedRole = searchParams.get('role') ?? 'everyone';
   const isArchive = searchParams.get('isArchive') === 'true';
 
