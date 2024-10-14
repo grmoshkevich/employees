@@ -1,6 +1,5 @@
 import { expect, test } from 'vitest'
 import { renderWithProviders, checkEmployeeRow } from './test-utils'
-import EmployeeList from './EmployeeList'
 import { waitFor, waitForElementToBeRemoved, within, screen, fireEvent } from '@testing-library/react'
 
 const archiveEmployee = {
@@ -71,14 +70,23 @@ test('the add new employee button works + adding works and is reflected on the /
   fireEvent.click(saveButton)
   expect(screen.getByText('Имя сотрудника обязательно.')).toBeInTheDocument()
   fireEvent.change(screen.getByLabelText('Имя сотрудника:'), { target: { value: newArchiveDriverEmployee.name } })
-
   fireEvent.click(saveButton)
+
+  expect(screen.getByText('Введите корректный номер телефона.')).toBeInTheDocument()
+  fireEvent.change(screen.getByLabelText('Телефон:'), { target: { value: newArchiveDriverEmployee.phone.slice(0, -2) + '__' } })
+  fireEvent.click(saveButton)
+
   expect(screen.getByText('Введите корректный номер телефона.')).toBeInTheDocument()
   fireEvent.change(screen.getByLabelText('Телефон:'), { target: { value: newArchiveDriverEmployee.phone } })
-
   fireEvent.click(saveButton)
+
+  expect(screen.getByText('Введите дату рождения в формате ДД.ММ.ГГГГ.')).toBeInTheDocument()
+  fireEvent.change(screen.getByLabelText('Дата рождения:'), { target: { value: newArchiveDriverEmployee.birthday.slice(0, -4) + '____' } })
+  fireEvent.click(saveButton)
+
   expect(screen.getByText('Введите дату рождения в формате ДД.ММ.ГГГГ.')).toBeInTheDocument()
   fireEvent.change(screen.getByLabelText('Дата рождения:'), { target: { value: newArchiveDriverEmployee.birthday } })
+  fireEvent.click(saveButton)
 
   fireEvent.change(screen.getByLabelText('Должность:'), { target: { value: newArchiveDriverEmployee.role } })
   if (newArchiveDriverEmployee.isArchive) fireEvent.click(screen.getByLabelText('В архиве:'))
@@ -89,10 +97,7 @@ test('the add new employee button works + adding works and is reflected on the /
   expect(screen.getByText('Сотрудники')).toBeInTheDocument()
 
   fireEvent.click(screen.getByLabelText('В архиве:'))
-  await waitForElementToBeRemoved(() => screen.queryByText(nonArchiveEmployee.name))
-  expect(screen.queryByText(archiveEmployee.name)).toBeInTheDocument()
-
-  fireEvent.change(screen.getByLabelText('Должность:'), { target: { value: 'driver' } })
+  checkEmployeeRow(nonArchiveEmployee, nonArchiveEmployee.isArchive)
   checkEmployeeRow(archiveEmployee, archiveEmployee.isArchive)
   checkEmployeeRow(newArchiveDriverEmployee)
 })
@@ -103,6 +108,7 @@ test('shows inidividual employee data in the editing page', async () => {
   fireEvent.click(screen.getByText(nonArchiveEmployee.name));
   await waitFor(() => {
     expect(screen.getByText('Изменение данных сотрудника')).toBeInTheDocument()
+    expect(screen.getByDisplayValue(nonArchiveEmployee.name)).toBeInTheDocument()
   });
 
   expect(screen.getByLabelText('Имя сотрудника:').value).toBe(nonArchiveEmployee.name)
@@ -115,12 +121,12 @@ test('shows inidividual employee data in the editing page', async () => {
 test(('edit page routing by id works + employee data changes are reflected in the /employees list'), async () => {
   renderWithProviders({ initialEntries: ["/employees/edit/" + nonArchiveEmployee.id], preloadedState: { employees: initialEmployees } });
   expect(screen.getByLabelText('Имя сотрудника:').value).toBe(nonArchiveEmployee.name)
-  
+
   const newName = 'Мария Иванова';
   fireEvent.change(screen.getByLabelText('Имя сотрудника:'), { target: { value: newName } })
   fireEvent.click(screen.getByRole('button', { name: 'Сохранить данные сотрудника' }));
 
   expect(screen.getByText('Сотрудники')).toBeInTheDocument()
   checkEmployeeRow(nonArchiveEmployee, false)
-  checkEmployeeRow({...nonArchiveEmployee, name: newName})
+  checkEmployeeRow({ ...nonArchiveEmployee, name: newName })
 })

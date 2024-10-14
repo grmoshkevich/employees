@@ -33,12 +33,10 @@ button {
 }
 
 #root {
-
     @media (min-width: 768px) {
         padding: 0.5rem;
         margin: 0 5rem;
     }
-
     @media (min-width: 1440px) {
         padding: 1rem;
         margin: 0 10rem;

@@ -6,7 +6,7 @@ import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the Data Grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the Data Grid
 import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { roleMap } from './utils';
 
 const parseDate = (date) => {
@@ -34,11 +34,24 @@ const dateComparator = (date1, date2) => {
 function EmployeeList() {
   const navigate = useNavigate();
   const gridRef = useRef();
-  const [selectedRole, setSelectedRole] = useState('everyone');
-  const [status, setStatus] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  console.log('asdf', searchParams.toString())
+  function setSelectedRole(selectedRole) {
+    setSearchParams(searchParamsLocal => {
+      searchParamsLocal.set('role', selectedRole)
+      return searchParamsLocal;
+    })
+  }
+  function setIsArchive(isArchive) {
+    setSearchParams(searchParamsLocal => {
+      searchParamsLocal.set('isArchive', isArchive)
+      return searchParamsLocal
+  })
+  }
+  const selectedRole = searchParams.get('role') ?? 'everyone';
+  const isArchive = searchParams.get('isArchive') === 'true';
 
   const employees = useSelector((state) => state.employees)
-  console.log('hey', employees)
   const [rowData, setRowData] = useState(employees);
   useEffect(() => {
     setRowData(employees)
@@ -55,36 +68,35 @@ function EmployeeList() {
       case 'role':
         setSelectedRole(newValue);
         break;
-      case 'status':
-        setStatus(newValue)
+      case 'isArchive':
+        setIsArchive(newValue)
         break;
     }
     gridRef.current.api.onFilterChanged();
   }, []);
 
   const isExternalFilterPresent = useCallback(() => {
-    return selectedRole !== "everyone" || status;
-  }, [selectedRole, status]);
+    return selectedRole !== "everyone" || isArchive;
+  }, [selectedRole, isArchive]);
 
   const doesExternalFilterPass = useCallback(
     (node) => {
       if (node.data) {
-        return (selectedRole !== "everyone" ? node.data.role === selectedRole : true) && (status ? node.data.isArchive : true);
+        return (selectedRole !== "everyone" ? node.data.role === selectedRole : true) && (isArchive ? node.data.isArchive : true);
       }
       return true;
     },
-    [selectedRole, status],
+    [selectedRole, isArchive],
   );
 
   const onRowClicked = (event) => {
     const employeeId = event.data.id;
-    navigate(`/employees/edit/${employeeId}`);
+    navigate(`/employees/edit/${employeeId}?` + searchParams.toString());
+  };
+  const handleAddNew = () => {
+    navigate('/employees/new?' + searchParams.toString());
   };
 
-  const handleAddNew = () => {
-    console.log('hei')
-    navigate('/employees/new');
-  };
   const onGridReady = useCallback((params) => {
     params.api.sizeColumnsToFit(); // Automatically resize columns
   }, []);
@@ -92,7 +104,6 @@ function EmployeeList() {
   const [domLayout, setDomLayout] = useState('normal'); // Высота таблицы
   useEffect(() => {
     const displayedRowsCount = gridRef.current.api?.getDisplayedRowCount()
-    console.log('displayedRowsCount', displayedRowsCount)
     if (displayedRowsCount < 10) {
       setDomLayout("autoHeight");
     }
@@ -107,7 +118,6 @@ function EmployeeList() {
       <h1>Сотрудники</h1>
       <button onClick={handleAddNew}>Добавить сотрудника</button>
       <div className="filter">
-
         <div>
           <label htmlFor="role">Должность:</label>
           <select
@@ -128,8 +138,8 @@ function EmployeeList() {
             type="checkbox"
             id="isArchive"
             name="isArchive"
-            checked={status}
-            onChange={e => externalFilterChanged('status', e.target.checked)}
+            checked={isArchive}
+            onChange={e => externalFilterChanged('isArchive', e.target.checked)}
           />
         </div>
       </div>

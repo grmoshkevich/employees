@@ -4,12 +4,12 @@ import React, { useState, useEffect } from "react";
 import InputMask from "@mona-health/react-input-mask";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch
 import { add, edit } from "./employeesSlice"; // Import the add action from employeesSlice
-import { useParams, useNavigate } from 'react-router-dom'; // For routing
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'; // For routing
 import './EmployeeEdit.scss'
 
 const EmployeeEdit = () => {
-  console.log()
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -28,7 +28,6 @@ const EmployeeEdit = () => {
   useEffect(() => {
     if (employee) {
       setFormData(employee); // Pre-fill form if editing
-      console.log('employeeemployee', employee)
     }
   }, [employee]);
 
@@ -79,11 +78,11 @@ const EmployeeEdit = () => {
     } else {
       dispatch(add(formData));
     }
-    navigate('/employees');
+    navigate('/employees?' + searchParams.toString());
   };
 
   const handleCancel = () => {
-    navigate('/employees'); // Go back to list without saving
+    navigate('/employees?' + searchParams.toString()); // Go back to list without saving
   };
 
   return (

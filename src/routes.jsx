@@ -1,5 +1,6 @@
 import EmployeeList from './EmployeeList.jsx'
 import EditEmployee from './EmployeeEdit.jsx'
+import NotFoundPage from './NotFoundPage.jsx';
 
 const routes = [
     {
@@ -11,7 +12,10 @@ const routes = [
     }, {
         path: "/employees/edit/:id",
         element: <EditEmployee />
-    },
+    }, {
+        path: "*",
+        element: <NotFoundPage />
+    }
 ];
 
 export default routes;
